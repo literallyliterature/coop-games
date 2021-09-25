@@ -4,6 +4,7 @@ export { getSudoku as createGame } from 'sudoku-gen';
 
 type CellRange = 0|1|2|3|4|5|6|7|8;
 type ValueRange = '1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9';
+type UserInputValueRange = ValueRange|'-';
 type SudokuCell = {
   column: CellRange,
   index: number,
@@ -11,6 +12,52 @@ type SudokuCell = {
   square: CellRange, // starting with 0|1|2 in the top row
   value: ValueRange,
 };
+type UserInputSudokuCell = SudokuCell & {
+  originalInput: UserInputValueRange,
+  userInput: UserInputValueRange,
+};
+type GameStatus = {
+  duplicates?: SudokuCell[],
+  mistakes?: SudokuCell[],
+  complete?: boolean,
+};
+
+export function analyseGameProgress({
+  gameString,
+  originalInputsString,
+  userInputsString,
+}: {
+  gameString: string,
+  originalInputsString: string,
+  userInputsString: string,
+}): GameStatus {
+  if (gameString === userInputsString) return { complete: true };
+
+  const cells = extractSudokuCells(gameString);
+  const originalInputs = originalInputsString.split('');
+  const userInputs = userInputsString.split('');
+  const userInputCells = cells.map((cell, index) => ({
+    ...cell,
+    originalInput: originalInputs[index],
+    userInput: userInputs[index],
+  })) as UserInputSudokuCell[];
+
+  const userEditableCells = userInputCells.filter((cell) => cell.originalInput === '-');
+  const mistakes = userEditableCells.filter((cell) => cell.userInput !== cell.value && cell.userInput !== '-');
+  const duplicates = mistakes.filter(
+    (mistake) => userInputCells.some(
+      (cell) => (
+        cell.userInput === mistake.userInput
+        && cell.index !== mistake.index
+        && (
+          cell.column === mistake.column
+          || cell.row === mistake.row
+          || cell.square === mistake.square)
+      ),
+    ),
+  );
+  return { duplicates, mistakes };
+}
 
 export function calculateColumnFromIndex(index: number): CellRange {
   return index % 9 as CellRange;
