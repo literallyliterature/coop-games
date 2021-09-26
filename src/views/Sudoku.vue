@@ -11,8 +11,8 @@
           cols="auto"
           no-gutters>
           <SudokuSquare
-            :square-col="squareCol"
-            :square-row="squareRow" />
+            :square-col="squareCol - 1"
+            :square-row="squareRow - 1" />
         </v-col>
       </v-row>
     </v-col>
@@ -33,6 +33,10 @@ import SudokuSquare from './SudokuSquare.vue';
     return {
       cells: createGame('easy'),
     };
+  },
+
+  created() {
+    this.$store.commit('sudoku/initialiseGame');
   },
 })
 export default class Sudoku extends Vue {}

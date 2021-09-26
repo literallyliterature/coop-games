@@ -8,8 +8,8 @@
         v-for="colIndex in 3"
         :key="colIndex">
         <SudokuCell
-          :col="3 * squareCol + colIndex"
-          :row="3 * squareRow + rowIndex" />
+          :col="3 * squareCol + colIndex - 1"
+          :row="3 * squareRow + rowIndex - 1" />
       </v-col>
     </v-row>
   </div>

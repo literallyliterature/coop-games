@@ -5,9 +5,16 @@
     contenteditable
     readonly
     style="font-size: 11px"
+    :style="readonly ? 'background: #f4f4f4' : ''"
     @focus="focusCell({ row, col })"
     @keydown.prevent="keyPressed">
     <div
+      v-if="readonly"
+      class="text-body-1 black--text"
+      v-text="cell.original" />
+
+    <div
+      v-else
       style="max-width: 35px"
       v-text="displayedNotes" />
   </div>
@@ -16,6 +23,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { mapMutations, mapState } from 'vuex';
+import { calculateIndexFromRowAndCol, SudokuCell as SudokuCellType } from '@/sudoku/sudoku.utils';
 
 const SudokuCellPropsAndMutations = Vue.extend({
   props: {
@@ -70,10 +78,22 @@ export default class SudokuCell extends SudokuCellPropsAndMutations {
     }
   }
 
+  get cellIndex(): number {
+    return calculateIndexFromRowAndCol(this.row, this.col);
+  }
+
+  get cell(): SudokuCellType {
+    return this.$store.state.sudoku.cells[this.cellIndex];
+  }
+
   get displayedNotes(): string {
     return Object.keys(this.notedNumbers)
       .filter((k) => this.notedNumbers[k])
       .join(' ');
+  }
+
+  get readonly(): boolean {
+    return this.cell.original !== ' ';
   }
 }
 </script>
