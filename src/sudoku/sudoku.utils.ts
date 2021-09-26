@@ -7,6 +7,7 @@ export type SudokuCell = {
   column: CellRange,
   correctValue: ValueRange,
   index: number,
+  notes: string,
   original: UserInputValueRange,
   row: CellRange,
   square: CellRange, // starting with 0|1|2 in the top row
@@ -47,6 +48,7 @@ export function extractSudokuCells({
   return gameString.split('').map((correctValue, index) => ({
     column: calculateColumnFromIndex(index),
     index,
+    notes: '',
     original: originalsString[index] as UserInputValueRange,
     row: calculateRowFromIndex(index),
     square: calculateSquareFromIndex(index),

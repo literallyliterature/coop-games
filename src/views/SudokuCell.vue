@@ -10,12 +10,19 @@
     @keydown.prevent="keyPressed">
     <div
       v-if="readonly"
-      class="text-body-1 black--text"
+      style="color: #222; font-size: 20px"
       v-text="cell.original" />
 
     <div
+      v-else-if="cell.userInput !== ' '"
+      :class="showAsError ? 'red--text text--lighten-1' : ''"
+      style="font-size: 20px"
+      :style="showAsError ? '' : 'color: #444'"
+      v-text="cell.userInput" />
+
+    <div
       v-else
-      style="max-width: 35px"
+      style="max-width: 35px; font-size: 9px"
       v-text="displayedNotes" />
   </div>
 </template>
@@ -61,20 +68,40 @@ const SudokuCellPropsAndMutations = Vue.extend({
 export default class SudokuCell extends SudokuCellPropsAndMutations {
   notedNumbers: { [key: string]: boolean } = {};
 
-  keyPressed(e: { key: string }): void {
+  keyPressed(e: KeyboardEvent): void {
     const numberKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
     const deleteKeys = ['Backspace', 'Delete'];
     const arrowKeys = ['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown'];
 
     const { key } = e;
 
-    if (numberKeys.includes(key)) Vue.set(this.notedNumbers, key, !this.notedNumbers[key]);
-    if (deleteKeys.includes(key)) this.notedNumbers = {};
-    else if (arrowKeys.includes(key)) {
+    if (arrowKeys.includes(key)) {
       if (key === 'ArrowLeft') this.focusCell({ row: this.row, col: this.col - 1 });
       else if (key === 'ArrowRight') this.focusCell({ row: this.row, col: this.col + 1 });
       else if (key === 'ArrowUp') this.focusCell({ row: this.row - 1, col: this.col });
       else if (key === 'ArrowDown') this.focusCell({ row: this.row + 1, col: this.col });
+      return;
+    }
+
+    if (this.readonly) return;
+
+    if (numberKeys.includes(key)) {
+      if (e.ctrlKey) {
+        Vue.set(this.notedNumbers, key, !this.notedNumbers[key]);
+      } else {
+        this.$store.commit('sudoku/setCellValue', {
+          col: this.col,
+          row: this.row,
+          value: key,
+        });
+      }
+    } else if (deleteKeys.includes(key)) {
+      this.notedNumbers = {};
+      this.$store.commit('sudoku/setCellValue', {
+        col: this.col,
+        row: this.row,
+        value: ' ',
+      });
     }
   }
 
@@ -93,7 +120,11 @@ export default class SudokuCell extends SudokuCellPropsAndMutations {
   }
 
   get readonly(): boolean {
-    return this.cell.original !== ' ';
+    return this.$store.getters['sudoku/complete'] || this.cell.original !== ' ';
+  }
+
+  get showAsError(): boolean {
+    return this.$store.getters['sudoku/duplicates'].some((cell:SudokuCellType) => cell === this.cell);
   }
 }
 </script>
@@ -101,9 +132,8 @@ export default class SudokuCell extends SudokuCellPropsAndMutations {
 <style>
 .sudoku-cell {
   border: 1px solid rgba(0,0,0,0.15);
-  width: 50px;
-  font-size: 9px;
-  height: 50px;
+  width: 36px;
+  height: 36px;
   justify-content: center;
   align-content: center;
   align-items: center;

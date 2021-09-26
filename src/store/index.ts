@@ -44,6 +44,8 @@ export default new Vuex.Store({
         originalsString: '',
       }),
       getters: {
+        complete: (state) => state.cells
+          .every((cell: SudokuCell) => cell.userInput === cell.correctValue),
         duplicates: (state, getters) => getters.mistakes
           .filter((mistakeCell: SudokuCell) => state.cells.some(
             (cell: SudokuCell) => (
