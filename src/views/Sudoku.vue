@@ -10,7 +10,9 @@
           :key="squareCol"
           cols="auto"
           no-gutters>
-          <SudokuSquare />
+          <SudokuSquare
+            :square-col="squareCol"
+            :square-row="squareRow" />
         </v-col>
       </v-row>
     </v-col>
