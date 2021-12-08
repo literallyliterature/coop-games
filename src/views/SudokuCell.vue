@@ -11,7 +11,7 @@
     <div
       v-if="readonly"
       style="color: #222; font-size: 20px"
-      v-text="cell.original" />
+      v-text="cell.correctValue" />
 
     <div
       v-else-if="cell.userInput !== ' '"

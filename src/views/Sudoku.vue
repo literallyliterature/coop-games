@@ -21,18 +21,11 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { createGame } from '@/sudoku/sudoku.utils';
 import SudokuSquare from './SudokuSquare.vue';
 
 @Component({
   components: {
     SudokuSquare,
-  },
-
-  data() {
-    return {
-      cells: createGame('easy'),
-    };
   },
 
   created() {
