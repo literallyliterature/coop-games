@@ -6,10 +6,12 @@ export type UserInputValueRange = ValueRange|' ';
 export type SudokuCell = {
   column: CellRange,
   correctValue: ValueRange,
+  focused: boolean,
   index: number,
   notedNumbers: { [key: string]: boolean },
   original: UserInputValueRange,
   row: CellRange,
+  showAsError: boolean,
   square: CellRange, // starting with 0|1|2 in the top row
   userInput: UserInputValueRange,
 };
@@ -47,10 +49,12 @@ export function extractSudokuCells({
 }): SudokuCell[] {
   return gameString.split('').map((correctValue, index) => ({
     column: calculateColumnFromIndex(index),
+    focused: false,
     index,
     notedNumbers: {},
     original: originalsString[index] as UserInputValueRange,
     row: calculateRowFromIndex(index),
+    showAsError: false,
     square: calculateSquareFromIndex(index),
     correctValue: correctValue as ValueRange,
     userInput: originalsString[index] as UserInputValueRange,
