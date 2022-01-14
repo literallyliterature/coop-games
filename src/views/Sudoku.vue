@@ -22,7 +22,11 @@
                 v-for="colIndex in 3"
                 :key="colIndex">
                 <SudokuCell
-                  :cell="game.cells[3 * squareRow + rowIndex][3 * squareCol + colIndex]"
+                  :cell="game.cells[
+                    3 * (squareRow - 1) + (rowIndex - 1)
+                  ][
+                    3 * (squareCol - 1) + (colIndex - 1)
+                  ]"
                   :is-game-complete="gameStatus === 'completed'"
                   @focused="setFocusedRowAndCol"
                   @keyPressed="triggerKeyPress" />
