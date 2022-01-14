@@ -1,8 +1,7 @@
 <template>
   <v-app>
     <v-app-bar app>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+      <router-link to="/sudoku">Sudoku</router-link>
     </v-app-bar>
 
     <v-main class="mt-12">
