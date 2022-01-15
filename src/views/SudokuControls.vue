@@ -16,19 +16,22 @@
     <v-col cols="auto" style="max-width: 50px">
       <v-row justify="center" dense>
         <v-col>
-          <v-btn @click="action('toggle')" icon outlined>
+          <v-btn
+            @click="$emit('update:in-notes-mode', !inNotesMode)"
+            :color="inNotesMode ? 'primary' : ''"
+            icon>
             <v-icon>mdi-pencil-outline</v-icon>
           </v-btn>
         </v-col>
 
         <v-col>
-          <v-btn @click="action('del')" icon outlined>
+          <v-btn @click="action('del')" icon>
             <v-icon>mdi-delete</v-icon>
           </v-btn>
         </v-col>
 
         <v-col>
-          <v-btn icon outlined>
+          <v-btn icon>
             <v-icon>mdi-content-save</v-icon>
           </v-btn>
         </v-col>
@@ -59,6 +62,12 @@ interface iconAndAction {
 }
 
 const SudokuControlsPropsAndMutations = Vue.extend({
+  props: {
+    inNotesMode: {
+      type: Boolean,
+      default: false,
+    },
+  },
 });
 
 @Component({})
@@ -73,7 +82,7 @@ export default class SudokuControls extends SudokuControlsPropsAndMutations {
     { icon: 'mdi-arrow-bottom-left', actionStr: 'down-left' },
     { icon: 'mdi-arrow-down', actionStr: 'down' },
     { icon: 'mdi-arrow-bottom-right', actionStr: 'down-right' },
-  ]
+  ];
 
   numItems: iconAndAction[] = [
     { icon: 'mdi-numeric-1', actionStr: '1' },
@@ -85,7 +94,7 @@ export default class SudokuControls extends SudokuControlsPropsAndMutations {
     { icon: 'mdi-numeric-7', actionStr: '7' },
     { icon: 'mdi-numeric-8', actionStr: '8' },
     { icon: 'mdi-numeric-9', actionStr: '9' },
-  ]
+  ];
 
   action(actionStr: string): void {
     this.$emit('action', actionStr);

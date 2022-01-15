@@ -35,7 +35,8 @@
       </div>
 
       <SudokuControls
-        class="mt-4"
+        class="mt-12"
+        :in-notes-mode.sync="inNotesMode"
         @action="triggerUserAction" />
     </v-col>
 
@@ -103,6 +104,8 @@ export default class Sudoku extends Vue {
   game: null|SudokuGame = null;
 
   gameStatus: 'uninitialised'|'started'|'completed' = 'uninitialised';
+
+  inNotesMode = false;
 
   selectedDifficulty: SudokuGameDifficulty = 'easy';
 
