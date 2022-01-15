@@ -37,7 +37,9 @@
       <SudokuControls
         class="mt-12"
         :in-notes-mode.sync="inNotesMode"
-        @action="triggerUserAction" />
+        :saved-states="savedStates"
+        @action="triggerUserAction"
+        @save-state="saveCurrentState" />
     </v-col>
 
     <v-col cols="auto" v-else>
@@ -81,6 +83,10 @@ import SudokuControls from './SudokuControls.vue';
 type SudokuGameDifficulty = 'easy'|'medium'|'hard'|'expert';
 type UserActionArrow = 'left'|'up'|'right'|'down';
 type UserAction = UserActionArrow|ValueRange|'del';
+interface SavedState {
+  gameString: string,
+  label: string,
+}
 interface SudokuGame {
   cells: SudokuCellType[][],
   difficulty: SudokuGameDifficulty,
@@ -106,6 +112,8 @@ export default class Sudoku extends Vue {
   gameStatus: 'uninitialised'|'started'|'completed' = 'uninitialised';
 
   inNotesMode = false;
+
+  savedStates: SavedState[] = [];
 
   selectedDifficulty: SudokuGameDifficulty = 'easy';
 
@@ -145,6 +153,15 @@ export default class Sudoku extends Vue {
       gameString,
       originalsString,
     };
+  }
+
+  saveCurrentState(label: string): void {
+    if (!label) return;
+
+    this.savedStates.push({
+      label,
+      gameString: this.game?.gameString || '',
+    });
   }
 
   setFocusedRowAndCol({ row, col }: InputRowAndCol): void {
