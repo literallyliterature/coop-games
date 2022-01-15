@@ -24,6 +24,8 @@
                   <SudokuCell
                     :ref="`cell-${getRowIndex(squareRow, rowIndex)}-${getColIndex(squareCol, colIndex)}`"
                     :cell="game.cells[getRowIndex(squareRow, rowIndex)][getColIndex(squareCol, colIndex)]"
+                    :is-focused="getRowIndex(squareRow, rowIndex) === game.focusedRow &&
+                      getColIndex(squareCol, colIndex) === game.focusedCol"
                     :is-game-complete="gameStatus === 'completed'"
                     @focused="setFocusedRowAndCol"
                     @keyPressed="triggerKeyPress" />
@@ -221,7 +223,9 @@ export default class Sudoku extends Vue {
 
       if (this.gameStatus !== 'completed' && currentCell.original === ' ') {
         if (!setNotes) currentCell.userInput = action as UserInputValueRange;
-        else if (currentCell.userInput === ' ') Vue.set(currentCell.notedNumbers, action, !currentCell.notedNumbers[action]);
+        else if (currentCell.userInput === ' ') {
+          Vue.set(currentCell.notedNumbers, action, !currentCell.notedNumbers[action]);
+        }
       }
     } else if (['up-left', 'up-right', 'down-left', 'down-right'].includes(action)) {
       const actions = action.split('-');

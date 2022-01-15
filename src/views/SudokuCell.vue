@@ -2,11 +2,14 @@
   <div
     ref="div"
     class="sudoku-cell d-flex text--secondary"
-    contenteditable
-    inputmode="none"
+    tabindex="0"
     readonly
     style="font-size: 11px"
-    :style="readonly ? 'background: #f4f4f4' : ''"
+    :style="{
+      background: readonly ? '#f4f4f4' : (
+        isFocused ? '#ddf' : ''
+      ),
+    }"
     @focus="$emit('focused', { row: cell.row, col: cell.column })"
     @keydown.prevent="e => $emit('keyPressed', e)">
     <div
@@ -36,6 +39,10 @@ const SudokuCellPropsAndMutations = Vue.extend({
     cell: {
       type: Object,
       required: true,
+    },
+    isFocused: {
+      type: Boolean,
+      default: false,
     },
     isGameComplete: {
       type: Boolean,
