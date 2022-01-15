@@ -22,11 +22,8 @@
                 v-for="colIndex in 3"
                 :key="colIndex">
                 <SudokuCell
-                  :cell="game.cells[
-                    3 * (squareRow - 1) + (rowIndex - 1)
-                  ][
-                    3 * (squareCol - 1) + (colIndex - 1)
-                  ]"
+                  :ref="`cell-${getRowIndex(squareRow, rowIndex)}-${getColIndex(squareCol, colIndex)}`"
+                  :cell="game.cells[getRowIndex(squareRow, rowIndex)][getColIndex(squareCol, colIndex)]"
                   :is-game-complete="gameStatus === 'completed'"
                   @focused="setFocusedRowAndCol"
                   @keyPressed="triggerKeyPress" />
@@ -102,6 +99,16 @@ export default class Sudoku extends Vue {
 
   selectedDifficulty: SudokuGameDifficulty = 'easy';
 
+  // eslint-disable-next-line class-methods-use-this
+  getColIndex(squareCol:1|2|3, cellCol:1|2|3): number {
+    return 3 * (squareCol - 1) + (cellCol - 1);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getRowIndex(squareRow:1|2|3, cellRow:1|2|3): number {
+    return 3 * (squareRow - 1) + (cellRow - 1);
+  }
+
   initialiseGame(difficulty: SudokuGameDifficulty): void {
     console.log(difficulty);
     const newGame = createGame(difficulty);
@@ -131,8 +138,24 @@ export default class Sudoku extends Vue {
   }
 
   setFocusedRowAndCol({ row, col }: InputRowAndCol): void {
-    if (this.game && col) this.game.focusedCol = col;
-    if (this.game && row) this.game.focusedRow = row;
+    console.log(`Initial: ${this.game?.focusedCol}, ${this.game?.focusedRow}`);
+
+    if (this.game && col !== undefined) this.game.focusedCol = col;
+    if (this.game && row !== undefined) this.game.focusedRow = row;
+
+    const ref = this.$refs[`cell-${this.game?.focusedRow}-${this.game?.focusedCol}`];
+    console.log(ref);
+    // eslint-disable-next-line
+    // @ts-ignore
+    const f = ref[0]?.focus;
+    if (f) {
+    // eslint-disable-next-line
+    // @ts-ignore
+      f();
+      console.log(f);
+    } else console.log('no ref focus found');
+
+    console.log(`After: ${this.game?.focusedCol}, ${this.game?.focusedRow}\n\n`);
   }
 
   triggerKeyPress(e: KeyboardEvent): void {
@@ -162,10 +185,10 @@ export default class Sudoku extends Vue {
     } = this.game;
     const currentCell = cells[focusedRow][focusedCol];
 
-    if (action === 'left') this.setFocusedRowAndCol({ col: Math.min((focusedCol) - 1, 0) as CellRange } as InputRowAndCol);
-    else if (action === 'up') this.setFocusedRowAndCol({ row: Math.min((focusedRow) - 1, 0) as CellRange } as InputRowAndCol);
-    else if (action === 'right') this.setFocusedRowAndCol({ col: Math.min((focusedCol) + 1, 0) as CellRange } as InputRowAndCol);
-    else if (action === 'down') this.setFocusedRowAndCol({ row: Math.min((focusedRow) + 1, 0) as CellRange } as InputRowAndCol);
+    if (action === 'left') this.setFocusedRowAndCol({ col: Math.max((focusedCol - 1), 0) as CellRange } as InputRowAndCol); // eslint-disable-line max-len
+    else if (action === 'up') this.setFocusedRowAndCol({ row: Math.max((focusedRow - 1), 0) as CellRange } as InputRowAndCol); // eslint-disable-line max-len
+    else if (action === 'right') this.setFocusedRowAndCol({ col: Math.min((focusedCol + 1), 8) as CellRange } as InputRowAndCol); // eslint-disable-line max-len
+    else if (action === 'down') this.setFocusedRowAndCol({ row: Math.min((focusedRow + 1), 8) as CellRange } as InputRowAndCol); // eslint-disable-line max-len
     else if (action === 'del') {
       currentCell.notedNumbers = {};
       currentCell.userInput = currentCell.original;

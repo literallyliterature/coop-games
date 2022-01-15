@@ -6,7 +6,7 @@
     readonly
     style="font-size: 11px"
     :style="readonly ? 'background: #f4f4f4' : ''"
-    @focus="$emit('focused', { row, col })"
+    @focus="$emit('focused', { row: cell.row, col: cell.column })"
     @keydown.prevent="e => $emit('keyPressed', e)">
     <div
       v-if="readonly"
@@ -46,6 +46,14 @@ const SudokuCellPropsAndMutations = Vue.extend({
 @Component({
 })
 export default class SudokuCell extends SudokuCellPropsAndMutations {
+  focus(): void {
+    console.log('focus');
+    // eslint-disable-next-line
+    // @ts-ignore
+    if (this.$refs.div?.focus) this.$refs.div.focus();
+    else console.log('cant focus');
+  }
+
   get displayedNotes(): string {
     return Object.keys(this.cell.notedNumbers)
       .filter((k) => this.cell.notedNumbers[k])
