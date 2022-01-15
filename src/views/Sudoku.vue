@@ -134,7 +134,6 @@ export default class Sudoku extends Vue {
   }
 
   initialiseGame(difficulty: SudokuGameDifficulty): void {
-    console.log(difficulty);
     const newGame = createGame(difficulty);
     const gameString = newGame.solution;
     const originalsString = newGame.puzzle.replaceAll('-', ' ');
