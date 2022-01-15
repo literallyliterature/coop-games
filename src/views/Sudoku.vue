@@ -152,8 +152,7 @@ export default class Sudoku extends Vue {
     if (this.game && row !== undefined) this.game.focusedRow = row;
 
     const ref = this.$refs[`cell-${this.game?.focusedRow}-${this.game?.focusedCol}`];
-    // eslint-disable-next-line
-    // @ts-ignore
+    // @ts-expect-error asdf
     const f = ref[0]?.focus;
     if (f) f();
   }
@@ -172,12 +171,12 @@ export default class Sudoku extends Vue {
       Delete: 'del',
     };
 
-    if (numberKeys.includes(key)) this.triggerUserAction(key as UserAction);
+    if (numberKeys.includes(key)) this.triggerUserAction(key as UserAction, e?.ctrlKey);
     // @ts-expect-error asdf
     if (keyToActionMapping[key]) this.triggerUserAction(keyToActionMapping[key] as UserAction);
   }
 
-  triggerUserAction(action: UserAction): void {
+  triggerUserAction(action: UserAction, ctrlKey: boolean): void {
     if (!this.game) return;
 
     const {
@@ -193,7 +192,12 @@ export default class Sudoku extends Vue {
       currentCell.notedNumbers = {};
       currentCell.userInput = currentCell.original;
     } else if (['1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(action)) {
-      if (this.gameStatus !== 'completed' && currentCell.original === ' ') currentCell.userInput = action;
+      const setNotes = this.inNotesMode ? !ctrlKey : !!ctrlKey;
+
+      if (this.gameStatus !== 'completed' && currentCell.original === ' ') {
+        if (!setNotes) currentCell.userInput = action;
+        else if (currentCell.userInput === ' ') Vue.set(currentCell.notedNumbers, action, true);
+      }
     }
 
     this.setFocusedRowAndCol({} as InputRowAndCol);
