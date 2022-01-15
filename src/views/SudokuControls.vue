@@ -1,32 +1,13 @@
 <template>
-  <v-row dense justify="space-between">
-    <v-col style="max-width: 110px">
-      <v-row justify="center" no-gutters>
-        <v-col cols="auto">
-          <v-btn @click="action('up')" icon outlined>
-            <v-icon>mdi-arrow-up</v-icon>
-          </v-btn>
-        </v-col>
-      </v-row>
-
-      <v-row dense justify="space-between">
-        <v-col cols="auto">
-          <v-btn @click="action('left')" icon outlined>
-            <v-icon>mdi-arrow-left</v-icon>
-          </v-btn>
-        </v-col>
-
-        <v-col cols="auto">
-          <v-btn @click="action('right')" icon outlined>
-            <v-icon>mdi-arrow-right</v-icon>
-          </v-btn>
-        </v-col>
-      </v-row>
-
+  <v-row align="center" align-content="center" dense justify="space-between">
+    <v-col cols="auto" style="max-width: 120px">
       <v-row dense justify="center">
-        <v-col cols="auto">
-          <v-btn @click="action('down')" icon outlined>
-            <v-icon>mdi-arrow-down</v-icon>
+        <v-col
+          v-for="(arrowItem, index) in arrowItems"
+          :key="index"
+          cols="auto">
+          <v-btn @click="action(arrowItem.actionStr)" icon small>
+            <v-icon>{{ arrowItem.icon }}</v-icon>
           </v-btn>
         </v-col>
       </v-row>
@@ -82,6 +63,18 @@ const SudokuControlsPropsAndMutations = Vue.extend({
 
 @Component({})
 export default class SudokuControls extends SudokuControlsPropsAndMutations {
+  arrowItems: iconAndAction[] = [
+    { icon: 'mdi-arrow-top-left', actionStr: 'up-left' },
+    { icon: 'mdi-arrow-up', actionStr: 'up' },
+    { icon: 'mdi-arrow-top-right', actionStr: 'up-right' },
+    { icon: 'mdi-arrow-left', actionStr: 'left' },
+    { icon: 'mdi-image-filter-center-focus', actionStr: 'focus-center' },
+    { icon: 'mdi-arrow-right', actionStr: 'right' },
+    { icon: 'mdi-arrow-bottom-left', actionStr: 'down-left' },
+    { icon: 'mdi-arrow-down', actionStr: 'down' },
+    { icon: 'mdi-arrow-bottom-right', actionStr: 'down-right' },
+  ]
+
   numItems: iconAndAction[] = [
     { icon: 'mdi-numeric-1', actionStr: '1' },
     { icon: 'mdi-numeric-2', actionStr: '2' },
