@@ -47,11 +47,9 @@ const SudokuCellPropsAndMutations = Vue.extend({
 })
 export default class SudokuCell extends SudokuCellPropsAndMutations {
   focus(): void {
-    console.log('focus');
     // eslint-disable-next-line
     // @ts-ignore
     if (this.$refs.div?.focus) this.$refs.div.focus();
-    else console.log('cant focus');
   }
 
   get displayedNotes(): string {

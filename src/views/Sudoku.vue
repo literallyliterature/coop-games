@@ -138,24 +138,14 @@ export default class Sudoku extends Vue {
   }
 
   setFocusedRowAndCol({ row, col }: InputRowAndCol): void {
-    console.log(`Initial: ${this.game?.focusedCol}, ${this.game?.focusedRow}`);
-
     if (this.game && col !== undefined) this.game.focusedCol = col;
     if (this.game && row !== undefined) this.game.focusedRow = row;
 
     const ref = this.$refs[`cell-${this.game?.focusedRow}-${this.game?.focusedCol}`];
-    console.log(ref);
     // eslint-disable-next-line
     // @ts-ignore
     const f = ref[0]?.focus;
-    if (f) {
-    // eslint-disable-next-line
-    // @ts-ignore
-      f();
-      console.log(f);
-    } else console.log('no ref focus found');
-
-    console.log(`After: ${this.game?.focusedCol}, ${this.game?.focusedRow}\n\n`);
+    if (f) f();
   }
 
   triggerKeyPress(e: KeyboardEvent): void {
