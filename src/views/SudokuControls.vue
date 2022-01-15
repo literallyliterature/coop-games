@@ -72,7 +72,8 @@
               <v-list v-if="savedStates.length">
                 <v-list-item
                   v-for="(savedState, index) in savedStates"
-                  :key="index">
+                  :key="index"
+                  @click="$emit('restore-state', savedState.cells)">
                   {{ savedState.label }}
                 </v-list-item>
               </v-list>

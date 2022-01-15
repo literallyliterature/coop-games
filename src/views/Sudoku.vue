@@ -39,6 +39,7 @@
         :in-notes-mode.sync="inNotesMode"
         :saved-states="savedStates"
         @action="triggerUserAction"
+        @restore-state="restoreState"
         @save-state="saveCurrentState" />
     </v-col>
 
@@ -69,6 +70,7 @@
 </template>
 
 <script lang="ts">
+import { cloneDeep } from 'lodash';
 import { Component, Vue } from 'vue-property-decorator';
 import {
   CellRange,
@@ -84,7 +86,7 @@ type SudokuGameDifficulty = 'easy'|'medium'|'hard'|'expert';
 type UserActionArrow = 'left'|'up'|'right'|'down';
 type UserAction = UserActionArrow|ValueRange|'del';
 interface SavedState {
-  gameString: string,
+  cells: SudokuCellType[][],
   label: string,
 }
 interface SudokuGame {
@@ -155,12 +157,16 @@ export default class Sudoku extends Vue {
     };
   }
 
+  restoreState(cells: SudokuCellType[][]): void {
+    if (this.game) this.game.cells = cloneDeep(cells);
+  }
+
   saveCurrentState(label: string): void {
     if (!label) return;
 
     this.savedStates.push({
       label,
-      gameString: this.game?.gameString || '',
+      cells: cloneDeep(this.game?.cells) || [],
     });
   }
 
