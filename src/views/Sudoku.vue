@@ -2,36 +2,41 @@
   <v-row justify="center" no-gutters>
     <v-col
       v-if="gameStatus === 'started'"
-      cols="auto"
-      style="border: 1px solid rgba(0, 0, 0, 0.2)">
-      <v-row
-        v-for="squareRow in 3"
-        :key="squareRow"
-        no-gutters>
-        <v-col
-          v-for="squareCol in 3"
-          :key="squareCol"
-          cols="auto"
+      cols="auto">
+      <div style="border: 1px solid rgba(0, 0, 0, 0.2)">
+        <v-row
+          v-for="squareRow in 3"
+          :key="squareRow"
           no-gutters>
-          <div style="border: 1px solid rgba(0, 0, 0, 0.7)">
-            <v-row
-              v-for="rowIndex in 3"
-              :key="rowIndex"
-              no-gutters>
-              <v-col
-                v-for="colIndex in 3"
-                :key="colIndex">
-                <SudokuCell
-                  :ref="`cell-${getRowIndex(squareRow, rowIndex)}-${getColIndex(squareCol, colIndex)}`"
-                  :cell="game.cells[getRowIndex(squareRow, rowIndex)][getColIndex(squareCol, colIndex)]"
-                  :is-game-complete="gameStatus === 'completed'"
-                  @focused="setFocusedRowAndCol"
-                  @keyPressed="triggerKeyPress" />
-              </v-col>
-            </v-row>
-          </div>
-        </v-col>
-      </v-row>
+          <v-col
+            v-for="squareCol in 3"
+            :key="squareCol"
+            cols="auto"
+            no-gutters>
+            <div style="border: 1px solid rgba(0, 0, 0, 0.7)">
+              <v-row
+                v-for="rowIndex in 3"
+                :key="rowIndex"
+                no-gutters>
+                <v-col
+                  v-for="colIndex in 3"
+                  :key="colIndex">
+                  <SudokuCell
+                    :ref="`cell-${getRowIndex(squareRow, rowIndex)}-${getColIndex(squareCol, colIndex)}`"
+                    :cell="game.cells[getRowIndex(squareRow, rowIndex)][getColIndex(squareCol, colIndex)]"
+                    :is-game-complete="gameStatus === 'completed'"
+                    @focused="setFocusedRowAndCol"
+                    @keyPressed="triggerKeyPress" />
+                </v-col>
+              </v-row>
+            </div>
+          </v-col>
+        </v-row>
+      </div>
+
+      <SudokuControls
+        class="mt-4"
+        @action="triggerUserAction" />
     </v-col>
 
     <v-col cols="auto" v-else>
@@ -70,6 +75,7 @@ import {
   ValueRange,
 } from '@/sudoku/sudoku.utils';
 import SudokuCell from './SudokuCell.vue';
+import SudokuControls from './SudokuControls.vue';
 
 type SudokuGameDifficulty = 'easy'|'medium'|'hard'|'expert';
 type UserActionArrow = 'left'|'up'|'right'|'down';
@@ -90,6 +96,7 @@ interface InputRowAndCol {
 @Component({
   components: {
     SudokuCell,
+    SudokuControls,
   },
 })
 export default class Sudoku extends Vue {
@@ -185,6 +192,8 @@ export default class Sudoku extends Vue {
     } else if (['1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(action)) {
       if (this.gameStatus !== 'completed' && currentCell.original === ' ') currentCell.userInput = action;
     }
+
+    this.setFocusedRowAndCol({} as InputRowAndCol);
   }
 
   get gameStarted(): boolean {
