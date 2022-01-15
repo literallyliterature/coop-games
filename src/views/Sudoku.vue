@@ -221,7 +221,7 @@ export default class Sudoku extends Vue {
 
       if (this.gameStatus !== 'completed' && currentCell.original === ' ') {
         if (!setNotes) currentCell.userInput = action as UserInputValueRange;
-        else if (currentCell.userInput === ' ') Vue.set(currentCell.notedNumbers, action, true);
+        else if (currentCell.userInput === ' ') Vue.set(currentCell.notedNumbers, action, !currentCell.notedNumbers[action]);
       }
     } else if (['up-left', 'up-right', 'down-left', 'down-right'].includes(action)) {
       const actions = action.split('-');
