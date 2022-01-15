@@ -3,6 +3,7 @@
     ref="div"
     class="sudoku-cell d-flex text--secondary"
     contenteditable
+    inputmode="none"
     readonly
     style="font-size: 11px"
     :style="readonly ? 'background: #f4f4f4' : ''"

@@ -77,6 +77,7 @@ import {
   createGame,
   extractSudokuCells,
   SudokuCell as SudokuCellType,
+  UserInputValueRange,
   ValueRange,
 } from '@/sudoku/sudoku.utils';
 import SudokuCell from './SudokuCell.vue';
@@ -84,7 +85,8 @@ import SudokuControls from './SudokuControls.vue';
 
 type SudokuGameDifficulty = 'easy'|'medium'|'hard'|'expert';
 type UserActionArrow = 'left'|'up'|'right'|'down';
-type UserAction = UserActionArrow|ValueRange|'del';
+type UserActionDiagonals = 'up-left'|'up-right'|'down-left'|'down-right';
+type UserAction = UserActionArrow|UserActionDiagonals|ValueRange|'del';
 interface SavedState {
   cells: SudokuCellType[][],
   label: string,
@@ -218,9 +220,12 @@ export default class Sudoku extends Vue {
       const setNotes = this.inNotesMode ? !ctrlKey : !!ctrlKey;
 
       if (this.gameStatus !== 'completed' && currentCell.original === ' ') {
-        if (!setNotes) currentCell.userInput = action;
+        if (!setNotes) currentCell.userInput = action as UserInputValueRange;
         else if (currentCell.userInput === ' ') Vue.set(currentCell.notedNumbers, action, true);
       }
+    } else if (['up-left', 'up-right', 'down-left', 'down-right'].includes(action)) {
+      const actions = action.split('-');
+      actions.forEach((a) => this.triggerUserAction(a as UserActionDiagonals, ctrlKey));
     }
 
     this.setFocusedRowAndCol({} as InputRowAndCol);
