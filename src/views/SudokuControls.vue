@@ -32,6 +32,7 @@
 
         <v-col>
           <v-menu
+            v-model="showingMenu"
             bottom
             :close-on-content-click="false"
             offset-y
@@ -45,18 +46,22 @@
               </v-btn>
             </template>
 
-            <v-card class="pa-2 pt-4" min-width="150px">
-              <a
+            <v-card min-width="150px">
+              <div
                 v-if="!showNewSaveInput"
-                class="ml-n5 text-body-2"
-                @click="showNewSaveInput = true">
-                Save state
-              </a>
+                class="text-left pa-4"
+                :class="savedStates.length ? 'pb-0' : ''">
+                <a
+                  class="text-body-2"
+                  @click="showNewSaveInput = true">
+                  Save current state
+                </a>
+              </div>
               <v-form
                 v-else
-                @submit.prevent>
+                class="pa-2 pl-4 pb-4"
+                @submit.prevent="saveState">
                 <v-text-field
-                  class="mt-n2"
                   autofocus
                   hide-details
                   label="Save state as"
@@ -141,6 +146,8 @@ export default class SudokuControls extends SudokuControlsPropsAndMutations {
 
   showNewSaveInput = false;
 
+  showingMenu = false;
+
   newSaveStateLabel = '';
 
   action(actionStr: string): void {
@@ -154,6 +161,8 @@ export default class SudokuControls extends SudokuControlsPropsAndMutations {
 
   saveState(): void {
     this.$emit('save-state', this.newSaveStateLabel);
+    this.resetSaveInput();
+    this.showingMenu = false;
   }
 }
 </script>
