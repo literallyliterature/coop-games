@@ -60,7 +60,7 @@ export default class SudokuCell extends SudokuCellPropsAndMutations {
 
   get backgroundColour(): string {
     if (this.isGameComplete) {
-      return this.readonly ? '#d4f4d4' : '#e4f4e4';
+      return (this.cell.original === ' ') ? '#e4f4e4' : '#cadaca';
     }
 
     if (this.readonly) return '#f4f4f4';

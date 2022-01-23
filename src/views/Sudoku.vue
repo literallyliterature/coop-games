@@ -37,6 +37,7 @@
       </div>
 
       <SudokuControls
+        v-if="gameStatus === 'started'"
         class="mt-12"
         :in-notes-mode.sync="inNotesMode"
         :saved-states="savedStates"
@@ -45,7 +46,9 @@
         @save-state="saveCurrentState" />
     </v-col>
 
-    <v-col cols="auto" v-else>
+    <v-col cols="12" v-if="gameStatus === 'completed'" />
+
+    <v-col v-if="gameStatus !== 'started'" cols="auto" class="mt-12">
       <v-chip-group
         v-model="selectedDifficulty"
         color="primary"
@@ -287,7 +290,6 @@ export default class Sudoku extends Vue {
   }
 
   checkIfGameIsCompleted(): void {
-    // if (this.flattenedCells.every((cell) => cell.correctValue === cell.userInput)) {
     if (this.flattenedCells.every((cell) => cell.correctValue === cell.userInput)) {
       this.gameStatus = 'completed';
       this.showingSnackbar = true;
