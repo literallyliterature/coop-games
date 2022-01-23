@@ -322,6 +322,8 @@ export default class Sudoku extends Vue {
       gameString,
       originalsString,
     };
+
+    this.saveCurrentState('Beginning');
   }
 
   restoreState(cells: SudokuCellType[][]): void {
