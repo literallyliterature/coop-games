@@ -7,6 +7,7 @@
     style="font-size: 11px"
     :style="{
       background: backgroundColour,
+      'border-color': mistake ? 'red' : '',
     }"
     @focus="$emit('focused', { row: cell.row, col: cell.column })"
     @keydown.prevent="e => $emit('keyPressed', e)">

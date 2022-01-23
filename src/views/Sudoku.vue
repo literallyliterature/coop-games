@@ -27,8 +27,9 @@
                     :is-focused="getRowIndex(squareRow, rowIndex) === game.focusedRow &&
                       getColIndex(squareCol, colIndex) === game.focusedCol"
                     :is-game-complete="gameStatus === 'completed'"
-                    :mistake="mistakesToShow.some(({ row, col }) => row === getRowIndex(squareRow, rowIndex))
-                      && col === getColIndex(squareCol, colIndex)"
+                    :mistake="checkIfCellHasAMistake({
+                      squareRow, rowIndex, squareCol, colIndex,
+                    })"
                     @focused="setFocusedRowAndCol"
                     @keyPressed="triggerKeyPress" />
                 </v-col>
@@ -125,6 +126,12 @@ interface SudokuGame {
 interface InputRowAndCol {
   row: undefined|CellRange,
   col: undefined|CellRange
+}
+interface CheckMistakesInput {
+  squareRow: 1|2|3,
+  squareCol: 1|2|3,
+  colIndex: 1|2|3,
+  rowIndex: 1|2|3,
 }
 
 @Component({
@@ -310,6 +317,7 @@ export default class Sudoku extends Vue {
 
   checkForMistakes(): void {
     const findDuplicatesIn9Cells = (cells: SudokuCellType[]) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const results: any = {};
       cells.forEach((cell) => {
         results[cell.userInput] = (results[cell.userInput] || 0) + 1;
@@ -328,6 +336,14 @@ export default class Sudoku extends Vue {
 
     const flattenedMistakes = flattenDeep(allMistakes).map((cell) => ({ row: cell.row, col: cell.column }));
     this.mistakesToShow = uniqBy(flattenedMistakes, ({ row, col }) => `${row}-${col}`);
+  }
+
+  checkIfCellHasAMistake({
+    squareRow, squareCol, colIndex, rowIndex,
+  }: CheckMistakesInput): boolean {
+    const c = this.getColIndex(squareCol, colIndex);
+    const r = this.getRowIndex(squareRow, rowIndex);
+    return this.mistakesToShow.some(({ row, col }) => row === r && col === c);
   }
 }
 </script>
