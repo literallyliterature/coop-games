@@ -7,7 +7,7 @@ set -e
 # navigate into the build output directory
 # if you are deploying to a custom domain
 # echo 'www.example.com' > CNAME
-docker-compose run ui npm run build
+npm run build
 cd dist
 git init
 git add -A
