@@ -91,6 +91,7 @@ export default class SudokuCell extends SudokuCellPropsAndMutations {
   width: 36px;
   height: 36px;
   justify-content: center;
+  touch-action: manipulation;
   align-content: center;
   align-items: center;
   caret-color: transparent;
