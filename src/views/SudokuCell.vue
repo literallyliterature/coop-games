@@ -7,7 +7,6 @@
     style="font-size: 11px"
     :style="{
       background: backgroundColour,
-      'border-color': mistake ? '' : '',
     }"
     @focus="$emit('focused', { row: cell.row, col: cell.column })"
     @keydown.prevent="e => $emit('keyPressed', e)">
@@ -25,7 +24,8 @@
 
     <div
       v-else
-      style="max-width: 35px; font-size: 9px"
+      class="font-weight-bold"
+      style="max-width: 35px; font-size: 9px; color: #c2c2c2"
       v-text="displayedNotes" />
   </div>
 </template>
@@ -65,10 +65,10 @@ export default class SudokuCell extends SudokuCellPropsAndMutations {
 
   get backgroundColour(): string {
     if (this.isGameComplete) {
-      return (this.cell.original === ' ') ? '#4f4f4f' : '#7f7f7f';
+      return (this.cell.original === ' ') ? '#474747' : '#343434';
     }
 
-    if (this.readonly) return '#343434';
+    if (this.readonly) return this.isFocused ? '#34345f' : '#343434';
 
     return this.isFocused ? '#48486f' : '#474747';
   }
@@ -97,6 +97,5 @@ export default class SudokuCell extends SudokuCellPropsAndMutations {
 }
 .sudoku-cell:focus {
   outline: none !important;
-  border:1px #78789F;
 }
 </style>
