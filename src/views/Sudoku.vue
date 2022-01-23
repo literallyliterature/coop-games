@@ -49,7 +49,8 @@
         :saved-states="savedStates"
         @action="triggerUserAction"
         @restore-state="restoreState"
-        @save-state="saveCurrentState" />
+        @save-state="saveCurrentState"
+        @undo="undoState" />
     </v-col>
 
     <v-col cols="12" v-if="gameStatus === 'completed'" />
@@ -80,7 +81,7 @@
 
     <v-col
       v-if="gameStatus === 'started'"
-      class="mt-12"
+      class="mt-6"
       cols="8">
       <v-btn
         block
@@ -186,6 +187,8 @@ export default class Sudoku extends Vue {
 
   savedStates: SavedState[] = [];
 
+  savedUndoStates: SavedState[] = [];
+
   selectedDifficulty: SudokuGameDifficulty = 'easy';
 
   showingSnackbar = false;
@@ -274,6 +277,20 @@ export default class Sudoku extends Vue {
     });
   }
 
+  saveUndoState(): void {
+    this.savedUndoStates.push({
+      label: (new Date()).toString(),
+      cells: cloneDeep(this.game?.cells) || [],
+    });
+  }
+
+  undoState(): void {
+    if (!this.game || !this.savedUndoStates.length) return;
+
+    const restoredCells = this.savedUndoStates.pop();
+    if (restoredCells) this.restoreState(restoredCells.cells);
+  }
+
   setFocusedRowAndCol({ row, col }: InputRowAndCol): void {
     if (this.game && col !== undefined) this.game.focusedCol = col;
     if (this.game && row !== undefined) this.game.focusedRow = row;
@@ -324,10 +341,13 @@ export default class Sudoku extends Vue {
 
       if (this.gameStatus !== 'completed' && currentCell.original === ' ') {
         if (!setNotes) {
-          currentCell.userInput = action as UserInputValueRange;
-          this.checkIfGameIsCompleted();
-          if (this.mistakesToShow.length) this.checkForMistakes();
-          this.removeAdjacentNotes(currentCell);
+          if (currentCell.userInput !== action) {
+            this.saveUndoState();
+            currentCell.userInput = action as UserInputValueRange;
+            this.checkIfGameIsCompleted();
+            if (this.mistakesToShow.length) this.checkForMistakes();
+            this.removeAdjacentNotes(currentCell);
+          }
         } else if (currentCell.userInput === ' ') {
           Vue.set(currentCell.notedNumbers, action, !currentCell.notedNumbers[action]);
         }
