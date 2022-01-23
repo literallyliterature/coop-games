@@ -1,7 +1,7 @@
 <template>
   <v-row justify="center" no-gutters>
     <v-col
-      v-if="gameStatus === 'started'"
+      v-if="gameStatus === 'started' || gameStatus === 'completed'"
       cols="auto">
       <div style="border: 1px solid rgba(0, 0, 0, 0.2)">
         <v-row
@@ -68,6 +68,14 @@
         Start
       </v-btn>
     </v-col>
+
+    <v-snackbar
+      v-model="showingSnackbar"
+      :color="snackbarColour"
+      top
+    >
+      {{ snackbarText }}
+    </v-snackbar>
   </v-row>
 </template>
 
@@ -124,6 +132,12 @@ export default class Sudoku extends Vue {
   savedStates: SavedState[] = [];
 
   selectedDifficulty: SudokuGameDifficulty = 'easy';
+
+  showingSnackbar = false;
+
+  snackbarColour = 'success';
+
+  snackbarText = 'You completed it. Great job!';
 
   get flattenedCells(): SudokuCellType[] {
     if (!this.game) return [];
@@ -253,8 +267,10 @@ export default class Sudoku extends Vue {
       const setNotes = this.inNotesMode ? !ctrlKey : !!ctrlKey;
 
       if (this.gameStatus !== 'completed' && currentCell.original === ' ') {
-        if (!setNotes) currentCell.userInput = action as UserInputValueRange;
-        else if (currentCell.userInput === ' ') {
+        if (!setNotes) {
+          currentCell.userInput = action as UserInputValueRange;
+          this.checkIfGameIsCompleted();
+        } else if (currentCell.userInput === ' ') {
           Vue.set(currentCell.notedNumbers, action, !currentCell.notedNumbers[action]);
         }
       }
@@ -268,6 +284,14 @@ export default class Sudoku extends Vue {
 
   get gameStarted(): boolean {
     return this.gameStatus === 'started';
+  }
+
+  checkIfGameIsCompleted(): void {
+    // if (this.flattenedCells.every((cell) => cell.correctValue === cell.userInput)) {
+    if (this.flattenedCells.every((cell) => cell.correctValue === cell.userInput)) {
+      this.gameStatus = 'completed';
+      this.showingSnackbar = true;
+    }
   }
 }
 </script>

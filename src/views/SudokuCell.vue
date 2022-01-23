@@ -6,9 +6,7 @@
     readonly
     style="font-size: 11px"
     :style="{
-      background: readonly ? '#f4f4f4' : (
-        isFocused ? '#ddf' : ''
-      ),
+      background: backgroundColour,
     }"
     @focus="$emit('focused', { row: cell.row, col: cell.column })"
     @keydown.prevent="e => $emit('keyPressed', e)">
@@ -58,6 +56,16 @@ export default class SudokuCell extends SudokuCellPropsAndMutations {
     // eslint-disable-next-line
     // @ts-ignore
     if (this.$refs.div?.focus) this.$refs.div.focus();
+  }
+
+  get backgroundColour(): string {
+    if (this.isGameComplete) {
+      return this.readonly ? '#d4f4d4' : '#e4f4e4';
+    }
+
+    if (this.readonly) return '#f4f4f4';
+
+    return this.isFocused ? '#ddf' : '';
   }
 
   get displayedNotes(): string {
