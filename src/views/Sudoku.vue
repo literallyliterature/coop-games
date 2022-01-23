@@ -327,6 +327,7 @@ export default class Sudoku extends Vue {
           currentCell.userInput = action as UserInputValueRange;
           this.checkIfGameIsCompleted();
           if (this.mistakesToShow.length) this.checkForMistakes();
+          this.removeAdjacentNotes(currentCell);
         } else if (currentCell.userInput === ' ') {
           Vue.set(currentCell.notedNumbers, action, !currentCell.notedNumbers[action]);
         }
@@ -379,6 +380,21 @@ export default class Sudoku extends Vue {
     const c = this.getColIndex(squareCol, colIndex);
     const r = this.getRowIndex(squareRow, rowIndex);
     return this.mistakesToShow.some(({ row, col }) => row === r && col === c);
+  }
+
+  removeAdjacentNotes(cell: SudokuCellType): void {
+    const enteredValue = cell.userInput;
+    if (!enteredValue) return;
+
+    const allAdjacentCells = [
+      ...this.allRows[cell.row],
+      ...this.allCols[cell.column],
+      ...this.allSquares[cell.square],
+    ];
+    const flattenedCells = flattenDeep(allAdjacentCells);
+    flattenedCells.forEach((c) => {
+      c.notedNumbers[enteredValue] = false; // eslint-disable-line no-param-reassign
+    });
   }
 }
 </script>
