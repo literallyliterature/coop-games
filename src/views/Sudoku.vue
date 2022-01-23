@@ -200,7 +200,7 @@ import SudokuControls from './SudokuControls.vue';
 type SudokuGameDifficulty = 'easy'|'medium'|'hard'|'expert';
 type UserActionArrow = 'left'|'up'|'right'|'down';
 type UserActionDiagonals = 'up-left'|'up-right'|'down-left'|'down-right';
-type UserAction = UserActionArrow|UserActionDiagonals|ValueRange|'del';
+type UserAction = UserActionArrow|UserActionDiagonals|ValueRange|'del'|'remove-focus';
 interface SavedState {
   cells: SudokuCellType[][],
   label: string,
@@ -208,8 +208,8 @@ interface SavedState {
 interface SudokuGame {
   cells: SudokuCellType[][],
   difficulty: SudokuGameDifficulty,
-  focusedCol: CellRange,
-  focusedRow: CellRange,
+  focusedCol: undefined|CellRange,
+  focusedRow: undefined|CellRange,
   gameString: string,
   originalsString: string,
 }
@@ -317,8 +317,8 @@ export default class Sudoku extends Vue {
     this.game = {
       cells,
       difficulty: this.selectedDifficulty,
-      focusedCol: 0,
-      focusedRow: 0,
+      focusedCol: undefined,
+      focusedRow: undefined,
       gameString,
       originalsString,
     };
@@ -371,7 +371,7 @@ export default class Sudoku extends Vue {
 
     const ref = this.$refs[`cell-${this.game?.focusedRow}-${this.game?.focusedCol}`];
     // @ts-expect-error asdf
-    const f = ref[0]?.focus;
+    const f = ref?.[0]?.focus;
     if (f) f();
   }
 
@@ -400,9 +400,14 @@ export default class Sudoku extends Vue {
     const {
       cells, focusedRow, focusedCol,
     } = this.game;
+    if (!focusedRow || !focusedCol) return;
+
     const currentCell = cells[focusedRow][focusedCol];
 
-    if (action === 'left') this.setFocusedRowAndCol({ col: Math.max((focusedCol - 1), 0) as CellRange } as InputRowAndCol); // eslint-disable-line max-len
+    if (action === 'remove-focus') {
+      this.game.focusedCol = undefined;
+      this.game.focusedRow = undefined;
+    } else if (action === 'left') this.setFocusedRowAndCol({ col: Math.max((focusedCol - 1), 0) as CellRange } as InputRowAndCol); // eslint-disable-line max-len
     else if (action === 'up') this.setFocusedRowAndCol({ row: Math.max((focusedRow - 1), 0) as CellRange } as InputRowAndCol); // eslint-disable-line max-len
     else if (action === 'right') this.setFocusedRowAndCol({ col: Math.min((focusedCol + 1), 8) as CellRange } as InputRowAndCol); // eslint-disable-line max-len
     else if (action === 'down') this.setFocusedRowAndCol({ row: Math.min((focusedRow + 1), 8) as CellRange } as InputRowAndCol); // eslint-disable-line max-len

@@ -88,7 +88,7 @@ export default class SudokuControls extends SudokuControlsPropsAndMutations {
     { icon: 'mdi-arrow-up', actionStr: 'up' },
     { icon: 'mdi-arrow-top-right', actionStr: 'up-right' },
     { icon: 'mdi-arrow-left', actionStr: 'left' },
-    { icon: 'mdi-image-filter-center-focus', actionStr: 'focus-center' },
+    { icon: 'mdi-image-filter-center-focus', actionStr: 'remove-focus' },
     { icon: 'mdi-arrow-right', actionStr: 'right' },
     { icon: 'mdi-arrow-bottom-left', actionStr: 'down-left' },
     { icon: 'mdi-arrow-down', actionStr: 'down' },
