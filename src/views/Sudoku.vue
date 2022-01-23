@@ -422,17 +422,17 @@ export default class Sudoku extends Vue {
       if (this.gameStatus !== 'completed' && currentCell.original === ' ') {
         if (!setNotes) {
           if (currentCell.userInput !== action) {
-            console.log('what');
             this.saveUndoState();
             currentCell.userInput = action as UserInputValueRange;
             this.checkIfGameIsCompleted();
             if (this.mistakesToShow.length) this.checkForMistakes();
             this.removeAdjacentNotes(currentCell);
-          } else {
-            console.log('huh');
           }
         } else if (currentCell.userInput === ' ') {
-          Vue.set(currentCell.notedNumbers, action, !currentCell.notedNumbers[action]);
+          currentCell.notedNumbers = {
+            ...currentCell.notedNumbers,
+            [action]: !currentCell.notedNumbers[action],
+          };
         }
       }
     } else if (['up-left', 'up-right', 'down-left', 'down-right'].includes(action)) {
