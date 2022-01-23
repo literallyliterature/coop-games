@@ -174,8 +174,9 @@
 
     <v-snackbar
       v-model="showingSnackbar"
+      class="mb-8"
       :color="snackbarColour"
-      top>
+      bottom>
       {{ snackbarText }}
     </v-snackbar>
   </v-row>
@@ -253,7 +254,7 @@ export default class Sudoku extends Vue {
 
   showNewSaveInput = false;
 
-  snackbarColour = 'success';
+  snackbarColour = 'success darken-4';
 
   snackbarText = 'You completed it. Great job!';
 
