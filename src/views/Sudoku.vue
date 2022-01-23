@@ -1,5 +1,8 @@
 <template>
-  <v-row justify="center" no-gutters>
+  <v-row
+    justify="center"
+    no-gutters
+    style="max-width: 400px; margin: auto">
     <v-col
       v-if="gameStatus === 'started' || gameStatus === 'completed'"
       cols="auto">
@@ -68,24 +71,56 @@
       <v-btn
         block
         class="mt-4"
-        color="primary"
+        color="primary darken-3"
         small
         @click="initialiseGame(selectedDifficulty)">
         Start
       </v-btn>
     </v-col>
 
-    <v-col v-if="gameStatus === 'started'" cols="auto" class="mt-12">
-      <v-btn block @click="checkForMistakes" outlined>
+    <v-col
+      v-if="gameStatus === 'started'"
+      class="mt-12"
+      cols="8">
+      <v-btn
+        block
+        color="grey lighten-1"
+        outlined
+        @click="checkForMistakes">
         Check for mistakes
       </v-btn>
     </v-col>
 
+    <!-- <v-col
+      class="mt-12"
+      cols="8">
+      <v-menu
+        :close-on-content-click="false"
+        offset-y>
+        <template #activator="{ on, attrs }">
+          <v-btn
+            v-bind="attrs"
+            v-on="on"
+            block
+            outlined>
+            Settings
+          </v-btn>
+        </template>
+
+        <v-card
+          class="pa-4"
+          min-width="150px">
+          <v-checkbox
+            v-model="darkMode"
+            label="Dark mode" />
+        </v-card>
+      </v-menu>
+    </v-col> -->
+
     <v-snackbar
       v-model="showingSnackbar"
       :color="snackbarColour"
-      top
-    >
+      top>
       {{ snackbarText }}
     </v-snackbar>
   </v-row>

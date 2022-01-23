@@ -6,7 +6,7 @@
           v-for="(arrowItem, index) in arrowItems"
           :key="index"
           cols="auto">
-          <v-btn @click="action(arrowItem.actionStr)" icon small>
+          <v-btn @click="action(arrowItem.actionStr)" icon small color="grey lighten-1">
             <v-icon>{{ arrowItem.icon }}</v-icon>
           </v-btn>
         </v-col>
@@ -18,14 +18,14 @@
         <v-col>
           <v-btn
             @click="$emit('update:in-notes-mode', !inNotesMode)"
-            :color="inNotesMode ? 'primary' : ''"
+            :color="inNotesMode ? 'primary' : 'grey lighten-1'"
             icon>
             <v-icon>mdi-pencil-outline</v-icon>
           </v-btn>
         </v-col>
 
         <v-col>
-          <v-btn @click="action('del')" icon>
+          <v-btn @click="action('del')" icon color="grey lighten-1">
             <v-icon>mdi-delete</v-icon>
           </v-btn>
         </v-col>
@@ -40,6 +40,7 @@
             <template #activator="{ on, attrs }">
               <v-btn
                 icon
+                 color="grey lighten-1"
                 v-bind="attrs"
                 v-on="on">
                 <v-icon>mdi-content-save</v-icon>
@@ -89,7 +90,7 @@
           v-for="(numItem, index) in numItems"
           :key="index"
           cols="auto">
-          <v-btn @click="action(numItem.actionStr)" icon outlined>
+          <v-btn @click="action(numItem.actionStr)" icon outlined color="grey lighten-1">
             <v-icon>{{ numItem.icon }}</v-icon>
           </v-btn>
         </v-col>

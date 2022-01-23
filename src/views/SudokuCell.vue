@@ -1,26 +1,26 @@
 <template>
   <div
     ref="div"
-    class="sudoku-cell d-flex text--secondary"
+    class="sudoku-cell d-flex"
     tabindex="0"
     readonly
     style="font-size: 11px"
     :style="{
       background: backgroundColour,
-      'border-color': mistake ? 'red' : '',
+      'border-color': mistake ? '' : '',
     }"
     @focus="$emit('focused', { row: cell.row, col: cell.column })"
     @keydown.prevent="e => $emit('keyPressed', e)">
     <div
-      v-if="readonly"
-      style="color: #222; font-size: 20px"
+      v-if="cell.original !== ' '"
+      style="color: #cacaca; font-size: 20px"
       v-text="cell.correctValue" />
 
     <div
       v-else-if="cell.userInput !== ' '"
-      :class="cell.showAsError ? 'red--text text--lighten-1' : ''"
+      :class="mistake ? 'error--text' : ''"
       style="font-size: 20px"
-      :style="cell.showAsError ? '' : 'color: #444'"
+      :style="mistake ? '' : 'color: #dadada'"
       v-text="cell.userInput" />
 
     <div
@@ -65,12 +65,12 @@ export default class SudokuCell extends SudokuCellPropsAndMutations {
 
   get backgroundColour(): string {
     if (this.isGameComplete) {
-      return (this.cell.original === ' ') ? '#e4f4e4' : '#cadaca';
+      return (this.cell.original === ' ') ? '#4f4f4f' : '#7f7f7f';
     }
 
-    if (this.readonly) return '#f4f4f4';
+    if (this.readonly) return '#343434';
 
-    return this.isFocused ? '#ddf' : '';
+    return this.isFocused ? '#48486f' : '#474747';
   }
 
   get displayedNotes(): string {
@@ -94,5 +94,9 @@ export default class SudokuCell extends SudokuCellPropsAndMutations {
   align-content: center;
   align-items: center;
   caret-color: transparent;
+}
+.sudoku-cell:focus {
+  outline: none !important;
+  border:1px #78789F;
 }
 </style>
