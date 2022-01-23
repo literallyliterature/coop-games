@@ -72,7 +72,7 @@
 </template>
 
 <script lang="ts">
-import { cloneDeep } from 'lodash';
+import { cloneDeep, flatten } from 'lodash';
 import { Component, Vue } from 'vue-property-decorator';
 import {
   CellRange,
@@ -119,9 +119,41 @@ export default class Sudoku extends Vue {
 
   inNotesMode = false;
 
+  mistakesToShow: InputRowAndCol[] = [];
+
   savedStates: SavedState[] = [];
 
   selectedDifficulty: SudokuGameDifficulty = 'easy';
+
+  get flattenedCells(): SudokuCellType[] {
+    if (!this.game) return [];
+    return flatten(this.game.cells);
+  }
+
+  get allRows(): SudokuCellType[][] {
+    if (!this.game) return [];
+    return this.game.cells;
+  }
+
+  get allCols(): SudokuCellType[][] {
+    if (!this.game) return [];
+    const newArr: SudokuCellType[][] = [];
+    this.flattenedCells.forEach((cell) => {
+      if (!newArr[cell.column]) newArr[cell.column] = [];
+      newArr[cell.column].push(cell);
+    });
+    return newArr;
+  }
+
+  get allSquares(): SudokuCellType[][] {
+    if (!this.game) return [];
+    const newArr: SudokuCellType[][] = [];
+    this.flattenedCells.forEach((cell) => {
+      if (!newArr[cell.square]) newArr[cell.square] = [];
+      newArr[cell.square].push(cell);
+    });
+    return newArr;
+  }
 
   // eslint-disable-next-line class-methods-use-this
   getColIndex(squareCol:1|2|3, cellCol:1|2|3): number {
