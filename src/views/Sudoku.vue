@@ -27,6 +27,8 @@
                     :is-focused="getRowIndex(squareRow, rowIndex) === game.focusedRow &&
                       getColIndex(squareCol, colIndex) === game.focusedCol"
                     :is-game-complete="gameStatus === 'completed'"
+                    :mistake="mistakesToShow.some(({ row, col }) => row === getRowIndex(squareRow, rowIndex))
+                      && col === getColIndex(squareCol, colIndex)"
                     @focused="setFocusedRowAndCol"
                     @keyPressed="triggerKeyPress" />
                 </v-col>
@@ -72,6 +74,12 @@
       </v-btn>
     </v-col>
 
+    <v-col v-if="gameStatus === 'started'" cols="auto" class="mt-12">
+      <v-btn block @click="checkForMistakes" outlined>
+        Check for mistakes
+      </v-btn>
+    </v-col>
+
     <v-snackbar
       v-model="showingSnackbar"
       :color="snackbarColour"
@@ -83,7 +91,9 @@
 </template>
 
 <script lang="ts">
-import { cloneDeep, flatten } from 'lodash';
+import {
+  cloneDeep, flatten, flattenDeep, uniqBy,
+} from 'lodash';
 import { Component, Vue } from 'vue-property-decorator';
 import {
   CellRange,
@@ -266,6 +276,7 @@ export default class Sudoku extends Vue {
     else if (action === 'del') {
       currentCell.notedNumbers = {};
       currentCell.userInput = currentCell.original;
+      if (this.mistakesToShow.length) this.checkForMistakes();
     } else if (['1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(action)) {
       const setNotes = this.inNotesMode ? !ctrlKey : !!ctrlKey;
 
@@ -273,6 +284,7 @@ export default class Sudoku extends Vue {
         if (!setNotes) {
           currentCell.userInput = action as UserInputValueRange;
           this.checkIfGameIsCompleted();
+          if (this.mistakesToShow.length) this.checkForMistakes();
         } else if (currentCell.userInput === ' ') {
           Vue.set(currentCell.notedNumbers, action, !currentCell.notedNumbers[action]);
         }
@@ -294,6 +306,28 @@ export default class Sudoku extends Vue {
       this.gameStatus = 'completed';
       this.showingSnackbar = true;
     }
+  }
+
+  checkForMistakes(): void {
+    const findDuplicatesIn9Cells = (cells: SudokuCellType[]) => {
+      const results: any = {};
+      cells.forEach((cell) => {
+        results[cell.userInput] = (results[cell.userInput] || 0) + 1;
+      });
+      return cells.filter((cell) => results[cell.userInput] > 1 && cell.userInput !== ' ' && cell.original === ' ');
+    };
+
+    const rowMistakes = this.allRows.map(findDuplicatesIn9Cells).filter((v) => v?.length);
+    const colMistakes = this.allCols.map(findDuplicatesIn9Cells).filter((v) => v?.length);
+    const squareMistakes = this.allSquares.map(findDuplicatesIn9Cells).filter((v) => v?.length);
+    const allMistakes = [
+      ...rowMistakes,
+      ...colMistakes,
+      ...squareMistakes,
+    ];
+
+    const flattenedMistakes = flattenDeep(allMistakes).map((cell) => ({ row: cell.row, col: cell.column }));
+    this.mistakesToShow = uniqBy(flattenedMistakes, ({ row, col }) => `${row}-${col}`);
   }
 }
 </script>

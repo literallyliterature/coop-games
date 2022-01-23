@@ -46,6 +46,10 @@ const SudokuCellPropsAndMutations = Vue.extend({
       type: Boolean,
       default: false,
     },
+    mistake: {
+      type: Boolean,
+      default: false,
+    },
   },
 });
 
