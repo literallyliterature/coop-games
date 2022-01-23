@@ -31,7 +31,11 @@
         </v-col>
 
         <v-col>
-          <v-btn @click="$emit('undo')" icon color="grey lighten-1">
+          <v-btn
+            @click="$emit('undo')"
+            :disabled="disableUndoButton"
+            icon
+            color="grey lighten-1">
             <v-icon>mdi-undo</v-icon>
           </v-btn>
         </v-col>
@@ -50,62 +54,6 @@
         </v-col>
       </v-row>
     </v-col>
-
-    <v-col
-      class="mt-8"
-      offset="2"
-      cols="8">
-      <v-menu
-        v-model="showingMenu"
-        bottom
-        :close-on-content-click="false"
-        offset-y
-        @input="resetSaveInput">
-        <template #activator="{ on, attrs }">
-          <v-btn
-            block
-            color="grey lighten-1"
-            outlined
-            v-bind="attrs"
-            v-on="on">
-            Save states
-          </v-btn>
-        </template>
-
-        <v-card min-width="150px">
-          <div
-            v-if="!showNewSaveInput"
-            class="text-left pa-4"
-            :class="savedStates.length ? 'pb-0' : ''">
-            <a
-              class="text-body-2"
-              @click="showNewSaveInput = true">
-              Save current state
-            </a>
-          </div>
-          <v-form
-            v-else
-            class="pa-2 pl-4 pb-4"
-            @submit.prevent="saveState">
-            <v-text-field
-              autofocus
-              hide-details
-              label="Save state as"
-              @blur="saveState"
-              v-model="newSaveStateLabel" />
-          </v-form>
-
-          <v-list v-if="savedStates.length">
-            <v-list-item
-              v-for="(savedState, index) in savedStates"
-              :key="index"
-              @click="$emit('restore-state', savedState.cells)">
-              {{ savedState.label }}
-            </v-list-item>
-          </v-list>
-        </v-card>
-      </v-menu>
-    </v-col>
   </v-row>
 </template>
 
@@ -123,14 +71,17 @@ const SudokuControlsPropsAndMutations = Vue.extend({
       type: Boolean,
       default: false,
     },
-    savedStates: {
-      type: Array,
-      default: () => [],
-    },
   },
 });
 
-@Component({})
+@Component({
+  props: {
+    disableUndoButton: {
+      type: Boolean,
+      default: false,
+    },
+  },
+})
 export default class SudokuControls extends SudokuControlsPropsAndMutations {
   arrowItems: iconAndAction[] = [
     { icon: 'mdi-arrow-top-left', actionStr: 'up-left' },
@@ -156,25 +107,8 @@ export default class SudokuControls extends SudokuControlsPropsAndMutations {
     { icon: 'mdi-numeric-9', actionStr: '9' },
   ];
 
-  showNewSaveInput = false;
-
-  showingMenu = false;
-
-  newSaveStateLabel = '';
-
   action(actionStr: string): void {
     this.$emit('action', actionStr);
-  }
-
-  resetSaveInput(): void {
-    this.showNewSaveInput = false;
-    this.newSaveStateLabel = '';
-  }
-
-  saveState(): void {
-    this.$emit('save-state', this.newSaveStateLabel);
-    this.resetSaveInput();
-    this.showingMenu = false;
   }
 }
 </script>

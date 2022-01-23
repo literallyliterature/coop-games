@@ -45,11 +45,9 @@
       <SudokuControls
         v-if="gameStatus === 'started'"
         class="mt-12"
+        :disable-undo-button="!savedUndoStates.length"
         :in-notes-mode.sync="inNotesMode"
-        :saved-states="savedStates"
         @action="triggerUserAction"
-        @restore-state="restoreState"
-        @save-state="saveCurrentState"
         @undo="undoState" />
     </v-col>
 
@@ -90,6 +88,62 @@
         @click="checkForMistakes">
         Check for mistakes
       </v-btn>
+    </v-col>
+
+    <v-col
+      v-if="gameStatus === 'started'"
+      class="mt-6"
+      cols="8">
+      <v-menu
+        v-model="showingMenu"
+        bottom
+        :close-on-content-click="false"
+        offset-y
+        @input="resetSaveInput">
+        <template #activator="{ on, attrs }">
+          <v-btn
+            block
+            color="grey lighten-1"
+            outlined
+            v-bind="attrs"
+            v-on="on">
+            Save states
+          </v-btn>
+        </template>
+
+        <v-card min-width="150px">
+          <div
+            v-if="!showNewSaveInput"
+            class="text-left pa-4"
+            :class="savedStates.length ? 'pb-0' : ''">
+            <a
+              class="text-body-2"
+              @click="showNewSaveInput = true">
+              Save current state
+            </a>
+          </div>
+          <v-form
+            v-else
+            class="pa-2 pl-4 pb-4"
+            @submit.prevent="saveState">
+            <v-text-field
+              autofocus
+              hide-details
+              label="Save state as"
+              @blur="saveCurrentState"
+              v-model="newSaveStateLabel" />
+          </v-form>
+
+          <v-list v-if="savedStates.length">
+            <v-list-item
+              v-for="(savedState, index) in savedStates"
+              :key="index"
+              @click="restoreState(savedState.cells)">
+              {{ savedState.label }}
+            </v-list-item>
+          </v-list>
+        </v-card>
+      </v-menu>
     </v-col>
 
     <!-- <v-col
@@ -185,13 +239,19 @@ export default class Sudoku extends Vue {
 
   mistakesToShow: InputRowAndCol[] = [];
 
+  newSaveStateLabel = '';
+
   savedStates: SavedState[] = [];
 
   savedUndoStates: SavedState[] = [];
 
   selectedDifficulty: SudokuGameDifficulty = 'easy';
 
+  showingMenu = false;
+
   showingSnackbar = false;
+
+  showNewSaveInput = false;
 
   snackbarColour = 'success';
 
@@ -266,6 +326,18 @@ export default class Sudoku extends Vue {
 
   restoreState(cells: SudokuCellType[][]): void {
     if (this.game) this.game.cells = cloneDeep(cells);
+    this.savedUndoStates = [];
+  }
+
+  resetSaveInput(): void {
+    this.showNewSaveInput = false;
+    this.newSaveStateLabel = '';
+  }
+
+  saveState(): void {
+    this.saveCurrentState(this.newSaveStateLabel);
+    this.resetSaveInput();
+    this.showingMenu = false;
   }
 
   saveCurrentState(label: string): void {
