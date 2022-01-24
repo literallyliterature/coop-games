@@ -130,7 +130,7 @@
               autofocus
               hide-details
               label="Save state as"
-              @blur="saveCurrentState"
+              @blur="saveState"
               v-model="newSaveStateLabel" />
           </v-form>
 
@@ -343,7 +343,7 @@ export default class Sudoku extends Vue {
     this.showingMenu = false;
   }
 
-  saveCurrentState(label: string): void {
+  saveCurrentState(label: string = this.newSaveStateLabel): void {
     if (!label) return;
 
     this.savedStates.push({
