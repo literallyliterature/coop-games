@@ -256,7 +256,7 @@ export default class Sudoku extends Vue {
 
   snackbarColour = 'success darken-4';
 
-  snackbarText = 'You completed it. Great job!';
+  snackbarText = 'Woot woot! Great job!';
 
   get flattenedCells(): SudokuCellType[] {
     if (!this.game) return [];
