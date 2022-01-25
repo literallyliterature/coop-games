@@ -146,6 +146,21 @@
       </v-menu>
     </v-col>
 
+    <v-fade-transition>
+      <v-col
+        v-if="gameStatus === 'started' && savedRedoStates.length"
+        class="mt-6"
+        cols="8">
+        <v-btn
+          block
+          color="grey lighten-1"
+          outlined
+          @click="redoState">
+          Redo
+        </v-btn>
+      </v-col>
+    </v-fade-transition>
+
     <!-- <v-col
       class="mt-12"
       cols="8">
@@ -244,6 +259,8 @@ export default class Sudoku extends Vue {
 
   savedStates: SavedState[] = [];
 
+  savedRedoStates: SavedState[] = [];
+
   savedUndoStates: SavedState[] = [];
 
   selectedDifficulty: SudokuGameDifficulty = 'easy';
@@ -327,6 +344,14 @@ export default class Sudoku extends Vue {
     this.saveCurrentState('Beginning');
   }
 
+  redoState(): void {
+    if (!this.game || !this.savedRedoStates.length) return;
+
+    this.saveUndoState(false);
+    const restoredCells = this.savedRedoStates.pop();
+    if (restoredCells) this.restoreState(restoredCells.cells, false);
+  }
+
   restoreState(cells: SudokuCellType[][], removeUndoStates = true): void {
     if (this.game) this.game.cells = cloneDeep(cells);
     if (removeUndoStates) this.savedUndoStates = [];
@@ -352,16 +377,21 @@ export default class Sudoku extends Vue {
     });
   }
 
-  saveUndoState(): void {
+  saveUndoState(clearRedos = true): void {
     this.savedUndoStates.push({
       label: (new Date()).toString(),
       cells: cloneDeep(this.game?.cells) || [],
     });
+    if (clearRedos) this.savedRedoStates = [];
   }
 
   undoState(): void {
     if (!this.game || !this.savedUndoStates.length) return;
 
+    this.savedRedoStates.push({
+      label: (new Date()).toString(),
+      cells: cloneDeep(this.game?.cells) || [],
+    });
     const restoredCells = this.savedUndoStates.pop();
     if (restoredCells) this.restoreState(restoredCells.cells, false);
   }
@@ -413,6 +443,7 @@ export default class Sudoku extends Vue {
     else if (action === 'right') this.setFocusedRowAndCol({ col: Math.min((focusedCol + 1), 8) as CellRange } as InputRowAndCol); // eslint-disable-line max-len
     else if (action === 'down') this.setFocusedRowAndCol({ row: Math.min((focusedRow + 1), 8) as CellRange } as InputRowAndCol); // eslint-disable-line max-len
     else if (action === 'del') {
+      if (currentCell.userInput !== currentCell.original) this.saveUndoState();
       currentCell.notedNumbers = {};
       currentCell.userInput = currentCell.original;
       if (this.mistakesToShow.length) this.checkForMistakes();
