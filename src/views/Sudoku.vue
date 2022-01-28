@@ -340,6 +340,10 @@ export default class Sudoku extends Vue {
       gameString,
       originalsString,
     };
+    this.savedStates = [];
+    this.savedRedoStates = [];
+    this.savedUndoStates = [];
+    this.mistakesToShow = [];
 
     this.saveCurrentState('Beginning');
   }
