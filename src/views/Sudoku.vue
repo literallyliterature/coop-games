@@ -349,12 +349,11 @@ export default class Sudoku extends Vue {
 
     this.saveUndoState(false);
     const restoredCells = this.savedRedoStates.pop();
-    if (restoredCells) this.restoreState(restoredCells.cells, false);
+    if (restoredCells) this.restoreState(restoredCells.cells);
   }
 
-  restoreState(cells: SudokuCellType[][], removeUndoStates = true): void {
+  restoreState(cells: SudokuCellType[][]): void {
     if (this.game) this.game.cells = cloneDeep(cells);
-    if (removeUndoStates) this.savedUndoStates = [];
   }
 
   resetSaveInput(): void {
@@ -393,7 +392,7 @@ export default class Sudoku extends Vue {
       cells: cloneDeep(this.game?.cells) || [],
     });
     const restoredCells = this.savedUndoStates.pop();
-    if (restoredCells) this.restoreState(restoredCells.cells, false);
+    if (restoredCells) this.restoreState(restoredCells.cells);
   }
 
   setFocusedRowAndCol({ row, col }: InputRowAndCol): void {
