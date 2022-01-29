@@ -489,25 +489,31 @@ export default class Sudoku extends Vue {
   }
 
   checkForMistakes(): void {
-    const findDuplicatesIn9Cells = (cells: SudokuCellType[]) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const results: any = {};
-      cells.forEach((cell) => {
-        results[cell.userInput] = (results[cell.userInput] || 0) + 1;
-      });
-      return cells.filter((cell) => results[cell.userInput] > 1 && cell.userInput !== ' ' && cell.original === ' ');
-    };
+    // The commented out code checked for duplicates, not for whether the user's entries were "correct"
 
-    const rowMistakes = this.allRows.map(findDuplicatesIn9Cells).filter((v) => v?.length);
-    const colMistakes = this.allCols.map(findDuplicatesIn9Cells).filter((v) => v?.length);
-    const squareMistakes = this.allSquares.map(findDuplicatesIn9Cells).filter((v) => v?.length);
-    const allMistakes = [
-      ...rowMistakes,
-      ...colMistakes,
-      ...squareMistakes,
-    ];
+    // const findDuplicatesIn9Cells = (cells: SudokuCellType[]) => {
+    //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //   const results: any = {};
+    //   cells.forEach((cell) => {
+    //     results[cell.userInput] = (results[cell.userInput] || 0) + 1;
+    //   });
+    //   return cells.filter((cell) => results[cell.userInput] > 1 && cell.userInput !== ' ' && cell.original === ' ');
+    // };
 
-    const flattenedMistakes = flattenDeep(allMistakes).map((cell) => ({ row: cell.row, col: cell.column }));
+    // const rowMistakes = this.allRows.map(findDuplicatesIn9Cells).filter((v) => v?.length);
+    // const colMistakes = this.allCols.map(findDuplicatesIn9Cells).filter((v) => v?.length);
+    // const squareMistakes = this.allSquares.map(findDuplicatesIn9Cells).filter((v) => v?.length);
+    // const allMistakes = [
+    //   ...rowMistakes,
+    //   ...colMistakes,
+    //   ...squareMistakes,
+    // ];
+
+    // const flattenedMistakes = flattenDeep(allMistakes).map((cell) => ({ row: cell.row, col: cell.column }));
+
+    const flattenedMistakes = this.flattenedCells.filter((cell) => cell.userInput !== cell.original
+        && cell.correctValue !== cell.userInput)
+      .map((cell) => ({ row: cell.row, col: cell.column }));
     this.mistakesToShow = uniqBy(flattenedMistakes, ({ row, col }) => `${row}-${col}`);
   }
 
